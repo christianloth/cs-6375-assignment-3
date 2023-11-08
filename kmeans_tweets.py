@@ -10,20 +10,38 @@ class KMeansTweets():
         self.sse = None
         self.random_seed = random_seed
 
-    def jaccard_distance(self, set1, set2):
-        intersection = len(set1.intersection(set2))
-        union = len(set1.union(set2))
+    def jaccard_distance(self, setA, setB):
+        """
+        :param setA: hashset set A
+        :param setB: hashset set B
+        :return: int the Jaccard distance between two sets
+        """
+        intersection = len(setA.intersection(setB))
+        union = len(setA.union(setB))
         return 1 - intersection / union
 
     def tweet_to_set(self, tweet):
+        """
+
+        :param tweet: string of the tweet
+        :return: hashset of words in tweet
+        """
         return set(tweet.lower().split())
 
     def find_centroid(self, cluster):
+        """
+        Finds the centroid for a specific cluster
+
+        :param cluster: list of hashsets of words in each tweet
+        :return: hashset of words in the centroid tweet
+        """
         min_distance = float('inf')
         centroid = None
         for tweet in cluster:
-            distance_sum = sum(self.jaccard_distance(tweet, other_tweet)
-                               for other_tweet in cluster if other_tweet != tweet)
+            distance_sum = 0
+            for tweet_to_compare in cluster:
+                if tweet_to_compare != tweet:
+                    distance_sum += self.jaccard_distance(tweet, tweet_to_compare)
             if distance_sum < min_distance:
                 min_distance = distance_sum
                 centroid = tweet
@@ -37,7 +55,7 @@ class KMeansTweets():
         random.seed(self.random_seed)
         self.centroids = random.sample(tweets, self.cluster_size)
 
-        for _ in range(self.max_iters):
+        for i in range(self.max_iters):
             # Assign tweets to the closest centroids
             self.clusters = [[] for _ in range(self.cluster_size)]
             for tweet in tweets:
@@ -87,26 +105,10 @@ class KMeansTweets():
 
         return sse
 
-
-
-from sklearn.cluster import KMeans
-
-class KMeansNumeric():
-    def __init__(self, cluster_size, max_iters=100, random_seed=3):
-        self.cluster_size = cluster_size
-        self.max_iters = max_iters
-        self.model = KMeans(n_clusters=cluster_size,
-                            max_iter=max_iters,
-                            random_state=random_seed)
-
-    def fit(self, data):
-        # Assuming 'data' is a 2D array or a DataFrame with numerical values
-        self.model.fit(data)
-
-    def predict(self, data):
-        # Returns the cluster index for each sample
-        return self.model.predict(data)
-
-    def calculate_sse(self):
-        # Returns the SSE (inertia) of the current model
-        return self.model.inertia_
+    def calculate_cluster_sizes(self):
+        """
+        Calculate the size (number of tweets) of each cluster.
+        Returns a dictionary where the key is the cluster index and the value is the size.
+        """
+        cluster_sizes = {i: len(cluster) for i, cluster in enumerate(self.clusters)}
+        return cluster_sizes
