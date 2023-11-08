@@ -2,12 +2,11 @@ import numpy as np
 import random
 
 class KMeansTweets():
-    def __init__(self, cluster_size, max_iters=100, random_seed=3):
-        self.cluster_size = cluster_size
-        self.max_iters = max_iters
-        self.clusters = [[] for _ in range(cluster_size)]
-        self.centroids = []
-        self.sse = None
+    def __init__(self, K, max_iters=100, random_seed=3):
+        self.K = K  # number of clusters to group the data into
+        self.max_iterations = max_iters
+        self.clusters = [[] for _ in range(K)]
+        self.centroids = []  # There will be one centroid for each cluster/K
         self.random_seed = random_seed
 
     def jaccard_distance(self, setA, setB):
@@ -48,20 +47,24 @@ class KMeansTweets():
         return centroid
 
     def fit(self, tweets):
+        """
+        Perform K-means clustering on the given tweets.
+        :param tweets: hashset of tweet strings
+        """
         # Convert tweets to sets of words
-        tweets = list(map(self.tweet_to_set, tweets))
+        tweets = [self.tweet_to_set(tweet) for tweet in tweets]
 
         # Init centroids
         random.seed(self.random_seed)
-        self.centroids = random.sample(tweets, self.cluster_size)
+        self.centroids = random.sample(tweets, self.K)  # sample without replacement
 
-        for i in range(self.max_iters):
+        for i in range(self.max_iterations):
             # Assign tweets to the closest centroids
-            self.clusters = [[] for _ in range(self.cluster_size)]
+            self.clusters = [[] for _ in range(self.K)]
             for tweet in tweets:
-                distances = [self.jaccard_distance(tweet, centroid) for centroid in self.centroids]
-                closest_centroid_index = np.argmin(distances)
-                self.clusters[closest_centroid_index].append(tweet)
+                distances_from_centroids = [self.jaccard_distance(tweet, centroid) for centroid in self.centroids]
+                closest_centroid_idx = np.argmin(distances_from_centroids)
+                self.clusters[closest_centroid_idx].append(tweet)
 
             # Update centroids
             new_centroids = []

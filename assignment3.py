@@ -24,12 +24,12 @@ def preprocess_tweets(df):
 if __name__ == '__main__':
     tweets_df = pd.read_csv(URL, sep='|', header=None, names=['tweet_id', 'timestamp', 'tweet'])  # read_csv so that it can download online file. Works with .txt here.
     preprocessed_tweets = preprocess_tweets(tweets_df)
-    # preprocessed_tweets = preprocess_tweets(tweets_df.head(5))
+    #preprocessed_tweets = preprocess_tweets(tweets_df.head(5))
 
     table_rows = []
 
     for k in K_VALS_FOR_OUTPUT:
-        kmeans = KMeansTweets(cluster_size=k)
+        kmeans = KMeansTweets(K=k)
         kmeans.fit(preprocessed_tweets)
         cluster_assignments = kmeans.predict(preprocessed_tweets)
 
@@ -48,4 +48,4 @@ if __name__ == '__main__':
 
     for k, sse, sizes in table_rows:
         sizes_str = ", ".join(f"{i}: {size} tweets" for i, size in sizes.items())
-        print(f"{k:<10} | {sse:<10.2f} | {sizes_str:<30}")
+        print(f"{k:<10} | {sse:<10.3f} | {sizes_str:<30}")
