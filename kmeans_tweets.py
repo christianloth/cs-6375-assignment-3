@@ -29,7 +29,7 @@ class KMeansTweets():
 
     def find_centroid(self, cluster):
         """
-        Finds the centroid for a specific cluster by calculating the tweet that has the
+        Finds the centroid for a cluster by calculating the tweet that has the
         smallest sum of distances to all other tweets in the cluster.
 
         :param cluster: list of hashsets of words in each tweet
@@ -39,7 +39,7 @@ class KMeansTweets():
         if not cluster:
             return None
 
-        # Cache distances in a dictionary to reduce overhead from O(n*(n-1)) to O(n*(n-1)/2))
+        # Cache distances in a HashMap/dictionary to reduce overhead from O(n*(n-1)) to O(n*(n-1)/2))
         distance_cache = {}
         for i, tweet in enumerate(cluster):
             for j, tweet_to_compare in enumerate(cluster):
@@ -47,12 +47,12 @@ class KMeansTweets():
                     distance_cache[frozenset([i, j])] = self.jaccard_distance(tweet, tweet_to_compare)
 
         # Calculate the sum of distances from each tweet to others in the cluster
-        min_distance = float('inf')
+        min_distance_sum = float('inf')
         centroid = None
         for i, tweet in enumerate(cluster):
             distance_sum = sum(distance_cache[frozenset([i, j])] for j in range(len(cluster)) if i != j)
-            if distance_sum < min_distance:
-                min_distance = distance_sum
+            if distance_sum < min_distance_sum:
+                min_distance_sum = distance_sum
                 centroid = tweet
 
         return centroid
@@ -67,7 +67,7 @@ class KMeansTweets():
 
         # Init centroids
         random.seed(self.random_seed)
-        self.centroids = random.sample(tweets, self.K)  # sample without replacement
+        self.centroids = random.sample(tweets, self.K)  # start out guessing centroids
 
         for i in range(self.max_iterations):
             # Assign tweets to the closest centroids
