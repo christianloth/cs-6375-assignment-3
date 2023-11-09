@@ -1,7 +1,6 @@
 import pandas as pd
 import re
 from kmeans_tweets import KMeansTweets
-from kmeans_numeric import KMeansNumeric
 
 URL = 'https://raw.githubusercontent.com/christianloth/cs-6375-public-files/main/Health-Tweets/usnewshealth.txt'
 K_VALS_FOR_OUTPUT = [2, 3, 4, 5, 10]  # Modify this list to include the k values you want to output
