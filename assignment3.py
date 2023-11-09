@@ -2,6 +2,7 @@ import pandas as pd
 import re
 from kmeans_tweets import KMeansTweets
 
+# Constants
 URL = 'https://raw.githubusercontent.com/christianloth/cs-6375-public-files/main/Health-Tweets/usnewshealth.txt'
 K_VALS_FOR_OUTPUT = [2, 3, 4, 5, 10]  # Modify this list to include the k values you want to output
 
@@ -29,7 +30,7 @@ if __name__ == '__main__':
 
     for k in K_VALS_FOR_OUTPUT:
         kmeans = KMeansTweets(K=k)
-        kmeans.fit(preprocessed_tweets)
+        kmeans.perform_clustering(preprocessed_tweets)
         cluster_assignments = kmeans.find_closest_centroids(preprocessed_tweets)
 
         # Calculate SSE
@@ -45,6 +46,6 @@ if __name__ == '__main__':
     print(f"{'Value of k':<10} | {'SSE':<10} | {'Size of each cluster':<30}")
     print('--------------------------------------------------------------------------------------')
 
-    for k, sse, sizes in table_rows:
-        sizes_str = ", ".join(f"{i}: {size} tweets" for i, size in sizes.items())
+    for k, sse, cluster_sizes in table_rows:
+        sizes_str = ", ".join(f"{i}: {size} tweets" for i, size in cluster_sizes.items())
         print(f"{k:<10} | {sse:<10.3f} | {sizes_str:<30}")
