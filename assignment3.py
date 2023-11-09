@@ -31,7 +31,7 @@ if __name__ == '__main__':
     for k in K_VALS_FOR_OUTPUT:
         kmeans = KMeansTweets(K=k)
         kmeans.fit(preprocessed_tweets)
-        cluster_assignments = kmeans.predict(preprocessed_tweets)
+        cluster_assignments = kmeans.find_closest_centroids(preprocessed_tweets)
 
         # Calculate SSE
         sse = kmeans.calculate_sse()

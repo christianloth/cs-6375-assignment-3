@@ -70,36 +70,43 @@ class KMeansTweets():
         self.centroids = random.sample(tweets, self.K)  # start out guessing centroids
 
         for i in range(self.max_iterations):
-            # Assign tweets to the closest centroids
+            # First, we will assign tweets to the closest centroids
             self.clusters = [[] for _ in range(self.K)]
             for tweet in tweets:
-                distances_from_centroids = [self.jaccard_distance(tweet, centroid) for centroid in self.centroids]
+                distances_from_centroids = [self.jaccard_distance(tweet, centroid) for centroid in self.centroids]  # calculate Jaccard distance for each tweet from each centroid
                 closest_centroid_idx = np.argmin(distances_from_centroids)
                 self.clusters[closest_centroid_idx].append(tweet)
 
             # Update centroids
             new_centroids = []
             for cluster in self.clusters:
-                if cluster:  # avoid division by zero
+                if cluster:  # check if the cluster isn't empty
                     new_centroid = self.find_centroid(cluster)
                     new_centroids.append(new_centroid)
-                else:  # if a cluster is empty, randomly reinitialize its centroid
+                else:  # if empty, randomly reinitialize its centroid
                     new_centroids.append(random.choice(tweets))
 
-            # Check for convergence (if centroids don't change)
+            # Check for convergence, if centroids didn't change, we're done
             if set(map(tuple, new_centroids)) == set(map(tuple, self.centroids)):
                 break
             else:
                 self.centroids = new_centroids
 
-    def predict(self, tweets):
-        tweets = list(map(self.tweet_to_set, tweets))
-        predictions = []
+    def find_closest_centroids(self, tweets):
+        """
+        Assigns each tweet to its closest centroid.
+        :param tweets: hashset of tweet strings
+        :return: list of centroid indexes representing the closest centroid for each tweet.
+        """
+        # Convert tweets to sets of words
+        tweets = [self.tweet_to_set(tweet) for tweet in tweets]
+
+        centroid_predictions = []
         for tweet in tweets:
-            distances = [self.jaccard_distance(tweet, centroid) for centroid in self.centroids]
-            closest_centroid_index = np.argmin(distances)
-            predictions.append(closest_centroid_index)
-        return predictions
+            distances_from_centroids = [self.jaccard_distance(tweet, centroid) for centroid in self.centroids]  # calculate Jaccard distance for each tweet from each centroid
+            closest_centroid_index = np.argmin(distances_from_centroids)  # index of the closest centroid, and the smallest value in distances_from_centroids
+            centroid_predictions.append(closest_centroid_index)  # add the index to the list of predictions
+        return centroid_predictions
 
     def calculate_sse(self):
         """
@@ -122,7 +129,7 @@ class KMeansTweets():
     def calculate_cluster_sizes(self):
         """
         Calculate the size (number of tweets) of each cluster.
-        Returns a dictionary where the key is the cluster index and the value is the size.
+        :return: dictionary where the key is the cluster index and the value is the size.
         """
         cluster_sizes = {i: len(cluster) for i, cluster in enumerate(self.clusters)}
         return cluster_sizes
