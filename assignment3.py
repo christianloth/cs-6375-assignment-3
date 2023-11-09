@@ -33,19 +33,16 @@ if __name__ == '__main__':
         kmeans.perform_clustering(preprocessed_tweets)
         cluster_assignments = kmeans.find_closest_centroids(preprocessed_tweets)
 
-        # Calculate SSE
         sse = kmeans.calculate_sse()
-
-        # Calculate the size of each cluster
         cluster_sizes = kmeans.calculate_cluster_sizes()
 
         # Store the results in a tuple
         table_rows.append((k, sse, cluster_sizes))
 
     # Now print the table
-    print(f"{'Value of k':<10} | {'SSE':<10} | {'Size of each cluster':<30}")
+    print(f"{'Value of k':<10} | {'SSE':<15} | {'Size of each cluster':<30}")
     print('--------------------------------------------------------------------------------------')
 
     for k, sse, cluster_sizes in table_rows:
-        sizes_str = ", ".join(f"{i}: {size} tweets" for i, size in cluster_sizes.items())
-        print(f"{k:<10} | {sse:<10.3f} | {sizes_str:<30}")
+        sizes_str = ", ".join(f"{i}: {num_tweets} tweets" for i, num_tweets in cluster_sizes.items())
+        print(f"{k:<10} | {sse:<15.3f} | {sizes_str:<30}")

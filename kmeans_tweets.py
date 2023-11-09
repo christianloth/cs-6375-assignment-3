@@ -109,8 +109,8 @@ class KMeansTweets:
         centroid_predictions = []
         for tweet in tweets:
             distances_from_centroids = [jaccard_distance(tweet, centroid) for centroid in self.centroids]  # calculate Jaccard distance for each tweet from each centroid
-            closest_centroid_index = np.argmin(distances_from_centroids)  # index of the closest centroid, and the smallest value in distances_from_centroids
-            centroid_predictions.append(closest_centroid_index)  # add the index to the list of predictions
+            closest_centroid_idx = np.argmin(distances_from_centroids)  # index of the closest centroid, and the smallest value in distances_from_centroids
+            centroid_predictions.append(closest_centroid_idx)  # add the index to the list of predictions
         return centroid_predictions
 
     def calculate_sse(self) -> float:
