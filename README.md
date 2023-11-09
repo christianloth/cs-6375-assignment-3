@@ -7,11 +7,6 @@ This is for assignment 3 in CS6375 by Christian Loth.
 - Python 3.11.1 or higher
 - `pipenv` for managing dependencies and the virtual environment.
 
-## Libraries Used
-
-- `numpy`
-- `pandas`
-
 ## Setup
 
 1. cd into the cs-6375-assignment-3 directory:
