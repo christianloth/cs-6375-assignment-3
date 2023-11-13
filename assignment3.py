@@ -5,6 +5,7 @@ from kmeans_tweets import KMeansTweets
 # Constants
 URL = 'https://raw.githubusercontent.com/christianloth/cs-6375-public-files/main/Health-Tweets/usnewshealth.txt'
 K_VALS_FOR_OUTPUT = [2, 3, 4, 5, 10]  # Modify this list to include the k values you want to output
+RANDOM_SEED = 3
 
 
 def preprocess_tweets(df):
@@ -29,7 +30,7 @@ if __name__ == '__main__':
     table_rows = []
 
     for k in K_VALS_FOR_OUTPUT:
-        kmeans = KMeansTweets(K=k)
+        kmeans = KMeansTweets(K=k, random_seed=RANDOM_SEED)
         kmeans.perform_clustering(preprocessed_tweets)
         cluster_assignments = kmeans.find_closest_centroids(preprocessed_tweets)
 

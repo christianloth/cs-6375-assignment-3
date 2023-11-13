@@ -36,12 +36,12 @@ def find_centroid(cluster: List[Set[str]]) -> Optional[Set[str]]:
     if not cluster:
         return None
 
-    # Cache distances in a HashMap/dictionary to reduce overhead from O(n*(n-1)) to O(n*(n-1)/2))
+    # Cache distances already calculated in a HashMap/dictionary to reduce overhead from O(n*(n-1)) to O(n*(n-1)/2))
     distance_cache = {}
     for i, tweet in enumerate(cluster):
         for j, tweet_to_compare in enumerate(cluster):
-            if j > i:  # Only compute each pair once
-                distance_cache[frozenset([i, j])] = jaccard_distance(tweet, tweet_to_compare)
+            if j > i:  # Only compute each pair once. One will always be greater if increasing the total sum of distances
+                distance_cache[frozenset([i, j])] = jaccard_distance(tweet, tweet_to_compare)  # frozenset([i, j]) will be equal to frozenset([j, i]), so order doesn't matter
 
     # Calculate the sum of distances from each tweet to others in the cluster
     min_distance_sum = float('inf')
@@ -58,7 +58,7 @@ def find_centroid(cluster: List[Set[str]]) -> Optional[Set[str]]:
 class KMeansTweets:
     def __init__(self, K, max_iters=100, random_seed=3) -> None:
         self.K = K  # number of clusters to group the data into
-        self.max_iterations = max_iters
+        self.max_iterations = max_iters  # max iterations for clustering algorithm to run
         self.clusters = [[] for _ in range(K)]
         self.centroids = []  # There will be one centroid for each cluster/K
         self.random_seed = random_seed
@@ -82,7 +82,7 @@ class KMeansTweets:
                 closest_centroid_idx = np.argmin(distances_from_centroids)
                 self.clusters[closest_centroid_idx].append(tweet)
 
-            # Update centroids
+            # Second, we will update centroids
             new_centroids = []
             for cluster in self.clusters:
                 if cluster:  # check if the cluster isn't empty
@@ -91,7 +91,7 @@ class KMeansTweets:
                 else:  # if empty, randomly reinitialize its centroid
                     new_centroids.append(random.choice(tweets))
 
-            # Check for convergence. If centroids didn't change in the round, then we're done
+            # Third, we will check for convergence. If centroids didn't change in the round, then we're done
             if set(map(tuple, new_centroids)) != set(map(tuple, self.centroids)):  # if round centroids changed
                 self.centroids = new_centroids
             else:  # if round centroids stayed the same
