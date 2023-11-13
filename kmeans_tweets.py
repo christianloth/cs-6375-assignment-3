@@ -6,8 +6,8 @@ import random
 
 def jaccard_distance(setA: Set[str], setB: Set[str]) -> float:
     """
-    :param setA: hashset set A
-    :param setB: hashset set B
+    :param setA: set A
+    :param setB: set B
     :return: int the Jaccard distance between two sets
     """
     intersection = len(setA.intersection(setB))
@@ -19,7 +19,7 @@ def tweet_to_set(tweet: str) -> Set[str]:
     """
 
     :param tweet: string of the tweet
-    :return: hashset of words in tweet
+    :return: set of words in tweet
     """
     return set(tweet.lower().split())
 
@@ -29,8 +29,8 @@ def find_centroid(cluster: List[Set[str]]) -> Optional[Set[str]]:
     Finds the centroid for a cluster by calculating the tweet that has the
     smallest sum of distances to all other tweets in the cluster.
 
-    :param cluster: list of hashsets of words in each tweet
-    :return: hashset of words in the centroid tweet
+    :param cluster: list of sets of words in each tweet
+    :return: set of words in the centroid tweet
     """
 
     if not cluster:
@@ -66,7 +66,7 @@ class KMeansTweets:
     def perform_clustering(self, tweets: List[str]) -> None:
         """
         Perform K-means clustering on the given tweets.
-        :param tweets: hashset of tweet strings
+        :param tweets: set of tweet strings
         """
         # Convert tweets to sets of words
         tweets = [tweet_to_set(tweet) for tweet in tweets]
@@ -100,7 +100,7 @@ class KMeansTweets:
     def find_closest_centroids(self, tweets: List[str]) -> List[int]:
         """
         Assigns each tweet to its closest centroid.
-        :param tweets: hashset of tweet strings
+        :param tweets: set of tweet strings
         :return: list of centroid indexes representing the closest centroid for each tweet.
         """
         # Convert tweets to sets of words
