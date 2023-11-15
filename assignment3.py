@@ -1,5 +1,8 @@
 import pandas as pd
 import re
+
+from matplotlib import pyplot as plt
+
 from kmeans_tweets import KMeansTweets
 
 # Constants
@@ -47,3 +50,16 @@ if __name__ == '__main__':
     for k, sse, cluster_sizes in table_rows:
         sizes_str = ", ".join(f"{i}: {num_tweets} tweets" for i, num_tweets in cluster_sizes.items())
         print(f"{k:<10} | {sse:<15.3f} | {sizes_str:<30}")
+
+    # Plotting k vs SSE
+    k_values = [row[0] for row in table_rows]
+    sse_values = [row[1] for row in table_rows]
+
+    plt.figure(figsize=(10, 6))
+    plt.plot(k_values, sse_values, marker='o')
+    plt.title('K vs SSE')
+    plt.xlabel('Number of Clusters (k)')
+    plt.ylabel('Sum of Squared Errors (SSE)')
+    plt.xticks(k_values)
+    plt.grid(True)
+    plt.show()

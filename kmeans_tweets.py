@@ -47,9 +47,9 @@ def find_centroid(cluster: List[Set[str]]) -> Optional[Set[str]]:
     min_distance_sum = float('inf')
     centroid = None
     for i, tweet in enumerate(cluster):
-        distance_sum = sum(distance_cache[frozenset([i, j])] for j in range(len(cluster)) if i != j)
-        if distance_sum < min_distance_sum:
-            min_distance_sum = distance_sum
+        curr_distance_sum = sum(distance_cache[frozenset([i, j])] for j in range(len(cluster)) if i != j)
+        if curr_distance_sum < min_distance_sum:  # If the total distance sum is the smallest so far, then update the centroid tweet
+            min_distance_sum = curr_distance_sum
             centroid = tweet
 
     return centroid
@@ -66,6 +66,7 @@ class KMeansTweets:
     def perform_clustering(self, tweets: List[str]) -> None:
         """
         Perform K-means clustering on the given tweets.
+        Here, we update the centroids in each iteration.
         :param tweets: set of tweet strings
         """
         # Convert tweets to sets of words
