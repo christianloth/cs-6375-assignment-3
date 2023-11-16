@@ -4,23 +4,24 @@ import numpy as np
 import random
 
 
-def jaccard_distance(setA: Set[str], setB: Set[str]) -> float:
+def jaccard_distance_similarity(setA: Set[str], setB: Set[str]) -> float:
     """
     :param setA: set A
     :param setB: set B
     :return: int the Jaccard distance between two sets
     """
+
     intersection = len(setA.intersection(setB))
     union = len(setA.union(setB))
-    return 1 - intersection / union
+    return 1 - intersection / union  # = 1 - |A and B| / |A or B|
 
 
 def tweet_to_set(tweet: str) -> Set[str]:
     """
-
     :param tweet: string of the tweet
     :return: set of words in tweet
     """
+
     return set(tweet.lower().split())
 
 
@@ -41,12 +42,13 @@ def find_centroid(cluster: List[Set[str]]) -> Optional[Set[str]]:
     for i, tweet in enumerate(cluster):
         for j, tweet_to_compare in enumerate(cluster):
             if j > i:  # Only compute each pair once. One will always be greater if increasing the total sum of distances
-                distance_cache[frozenset([i, j])] = jaccard_distance(tweet, tweet_to_compare)  # frozenset([i, j]) will be equal to frozenset([j, i]), so order doesn't matter
+                distance_cache[frozenset([i, j])] = jaccard_distance_similarity(tweet, tweet_to_compare)  # frozenset([i, j]) will be equal to frozenset([j, i]), so order doesn't matter
 
     # Calculate the sum of distances from each tweet to others in the cluster
     min_distance_sum = float('inf')
     centroid = None
     for i, tweet in enumerate(cluster):
+
         curr_distance_sum = sum(distance_cache[frozenset([i, j])] for j in range(len(cluster)) if i != j)
         if curr_distance_sum < min_distance_sum:  # If the total distance sum is the smallest so far, then update the centroid tweet
             min_distance_sum = curr_distance_sum
@@ -79,7 +81,7 @@ class KMeansTweets:
             # First, we will assign tweets to the closest centroids
             self.clusters = [[] for _ in range(self.K)]
             for tweet in tweets:
-                distances_from_centroids = [jaccard_distance(tweet, centroid) for centroid in self.centroids]  # calculate Jaccard distance for each tweet from each centroid
+                distances_from_centroids = [jaccard_distance_similarity(tweet, centroid) for centroid in self.centroids]  # calculate Jaccard distance for each tweet from each centroid
                 closest_centroid_idx = np.argmin(distances_from_centroids)
                 self.clusters[closest_centroid_idx].append(tweet)
 
@@ -109,7 +111,7 @@ class KMeansTweets:
 
         centroid_predictions = []
         for tweet in tweets:
-            distances_from_centroids = [jaccard_distance(tweet, centroid) for centroid in self.centroids]  # calculate Jaccard distance for each tweet from each centroid
+            distances_from_centroids = [jaccard_distance_similarity(tweet, centroid) for centroid in self.centroids]  # calculate Jaccard distance for each tweet from each centroid
             closest_centroid_idx = np.argmin(distances_from_centroids)  # index of the closest centroid, and the smallest value in distances_from_centroids
             centroid_predictions.append(closest_centroid_idx)  # add the index to the list of predictions
         return centroid_predictions
@@ -117,18 +119,19 @@ class KMeansTweets:
     def calculate_sse(self) -> float:
         """
         Formula parameters:
-
         Ci: set of points in cluster i
         mi: centroid of cluster i
         x: tweet point
         SSE = sum of the squared distance of each point in cluster i from the centroid mi
+
+        :return: float the SSE of the current model
         """
 
         sse = 0
         for i, cluster in enumerate(self.clusters):
             centroid = self.centroids[i]
             for tweet in cluster:
-                sse += jaccard_distance(tweet, centroid) ** 2
+                sse += jaccard_distance_similarity(tweet, centroid) ** 2
 
         return sse
 

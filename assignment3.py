@@ -7,8 +7,8 @@ from kmeans_tweets import KMeansTweets
 
 # Constants
 URL = 'https://raw.githubusercontent.com/christianloth/cs-6375-public-files/main/Health-Tweets/usnewshealth.txt'
-K_VALS_FOR_OUTPUT = [2, 3, 4, 5, 10]  # Modify this list to include the k values you want to output
-RANDOM_SEED = 3
+K_VALS_FOR_OUTPUT = [2, 3, 4, 5, 10]  # User can modify this list to include the k values you want to output
+RANDOM_SEED = 35  # User can modify this random seed too
 
 
 def preprocess_tweets(df):
@@ -28,7 +28,6 @@ def preprocess_tweets(df):
 if __name__ == '__main__':
     tweets_df = pd.read_csv(URL, sep='|', header=None, names=['tweet_id', 'timestamp', 'tweet'])  # read_csv so that it can download online file. Works with .txt here.
     preprocessed_tweets = preprocess_tweets(tweets_df)
-    #preprocessed_tweets = preprocess_tweets(tweets_df.head(5))
 
     table_rows = []
 
@@ -58,7 +57,7 @@ if __name__ == '__main__':
     plt.figure(figsize=(10, 6))
     plt.plot(k_values, sse_values, marker='o')
     plt.title('K vs SSE')
-    plt.xlabel('Number of Clusters (k)')
+    plt.xlabel('Number of Clusters (K)')
     plt.ylabel('Sum of Squared Errors (SSE)')
     plt.xticks(k_values)
     plt.grid(True)
